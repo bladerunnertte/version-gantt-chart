@@ -1,1 +1,26 @@
-<h2>VersionGanttChart#index</h2>
+<ul class="version_gantt_chart">
+<% @sorted_user_version_issue_hash.each do |user, version_issuelist| -%>
+  <li>
+    <%= "#{user.name}" %>
+    <ul>
+      <% version_issuelist.each do |version, issue_list| -%>
+      <li>
+      <%= "#{version.name} - #{version.project.name}" %>
+        <ul>
+          <% issue_list.each do |issue| -%>
+          <li>
+            <%= "##{issue.id}:#{issue.subject}" -%>
+            <ul>
+              <li><%= "予定工数 #{issue.estimated_hours}" -%></li>
+              <li><%= "消費工数 #{issue.spent_hours}" -%></li>
+              <li><%= "進捗 #{issue.done_ratio}%" -%></li>
+            </ul>
+          </li>
+          <% end -%>
+        </ul>
+      </li>
+      <% end -%>
+    </ul>
+  </li>
+<% end -%>
+</ul>
