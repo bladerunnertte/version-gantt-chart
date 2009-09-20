@@ -1,0 +1,2 @@
+module VersionGanttChartHelper
+end
