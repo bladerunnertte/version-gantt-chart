@@ -1,22 +1,17 @@
 <ul class="version_gantt_chart">
-<% @sorted_user_version_issue_hash.each do |user, version_issuelist| -%>
+<% @user_tasks_list.each do |user_task| -%>
   <li>
-    <%= "#{user.name}" %>
+    <%= "#{user_task.user.name}" %>
     <ul>
-      <% version_issuelist.each do |version, issue_list| -%>
+      <% user_task.version_list.each do |version| -%>
       <li>
       <%= "#{version.name} - #{version.project.name}" %>
         <ul>
-          <% issue_list.each do |issue| -%>
-          <li>
-            <%= "##{issue.id}:#{issue.subject}" -%>
-            <ul>
-              <li><%= "予定工数 #{issue.estimated_hours}" -%></li>
-              <li><%= "消費工数 #{issue.spent_hours}" -%></li>
-              <li><%= "進捗 #{issue.done_ratio}%" -%></li>
-            </ul>
-          </li>
-          <% end -%>
+          <li><%= "最遅開始日 #{user_task.latest_start_day(version)}" -%></li>
+          <li><%= "期日 #{version.due_date}" -%></li>
+          <li><%= "完了予想日 #{user_task.able_day(version)}" -%></li>
+          <li><%= "終了割合 #{user_task.complete_percent(version)} %" -%></li>
+          <li><%= "作業済み割合 #{user_task.done_percent(version)} %" -%></li>
         </ul>
       </li>
       <% end -%>
