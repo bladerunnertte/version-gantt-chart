@@ -5,7 +5,10 @@
     <ul>
       <% user_task.version_list.each do |version| -%>
       <li>
-      <%= "#{version.name} - #{version.project.name}" %>
+      <% close_percent = user_task.complete_percent(version) -%>
+      <% done_percent = user_task.done_percent(version) -%>
+      <% version_legend = "#{version.name} - #{version.project.name}" -%>
+      <%= progress_bar([close_percent,close_percent+done_percent],{:legend=>version_legend}) -%>
         <ul>
           <li><%= "最遅開始日 #{user_task.latest_start_day(version)}" -%></li>
           <li><%= "期日 #{version.due_date}" -%></li>
