@@ -1,55 +1,57 @@
 class UserTasks
   attr_reader :user
-  attr_reader :version_list
+  attr_reader :version
 
-  def initialize( user )
+  def initialize( user, version )
     @user = user
-    @version_task_hash = {}
-    @version_list = []
+    @version = version
+    @task_info_collector = TaskInfoCollector.new
+    @empty = true
   end
 
   def empty?
-    @version_task_hash.empty?
+    return @empty
   end
 
+  #集計対象のチケットを登録
   def add( issue )
-    if( issue.assigned_to == @user )
-      add_task_by_version( issue )
+    if( issue.assigned_to == @user && issue.fixed_version == @version )
+      @empty = false
+      @task_info_collector.add(issue)
     end
   end
-
-  def add_task_by_version( issue )
-    unless @version_task_hash[issue.fixed_version]
-      @version_task_hash[issue.fixed_version] = TaskInfoCollector.new
-      @version_list.push( issue.fixed_version )
-    end
-
-     @version_task_hash[issue.fixed_version].add( issue )
-  end
-  private :add_task_by_version
 
   #最遅開始日
-  def latest_start_day( version )
-    return version.due_date - @version_task_hash[version].estimated_days + 1 #+1は期日当日分の調整
+  def start_date
+    return due_date - @task_info_collector.estimated_days + 1 #+1は期日当日分の調整
+  end
+
+  #期日
+  def due_date
+    return @version.due_date ? @version.due_date : Date.today - 1 #期日未設定時は超過で表示して目立たせる
   end
 
   #バージョンの予定工数のうち終了の割合
-  def complete_percent( version )
-    return @version_task_hash[version].complete_percent
+  def complete_percent
+    return @task_info_collector.complete_percent
   end
 
   #バージョンの予定工数のうち作業済みの割合（終了状態を除いて）
-  def done_percent( version )
-    return @version_task_hash[version].done_percent
+  def done_percent
+    return @task_info_collector.done_percent
+  end
+
+  def done_date
+    return start_date + ((due_date - start_date + 1)*(complete_percent+done_percent)/100).floor
   end
 
   #完了予想日
-  def able_day( version )
-    return Date.today + @version_task_hash[version].remain_estimated_days - 1 #-1は今日の作業分の調整
+  def able_day
+    return Date.today + @task_info_collector.remain_estimated_days - 1 #-1は今日の作業分の調整
   end
 
   #超過日数
-  def over_days( version )
-    return @version_task_hash[version].over_days
+  def over_days
+    return @task_info_collector.over_days
   end
 end
