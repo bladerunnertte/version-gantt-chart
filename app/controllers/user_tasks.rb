@@ -1,6 +1,5 @@
 class UserTasks
   attr_reader :user
-  attr_reader :version
 
   def initialize( user, version )
     @user = user
@@ -11,6 +10,10 @@ class UserTasks
 
   def empty?
     return @empty
+  end
+
+  def name
+    return "#{@version.name} - #{@version.project.name}"
   end
 
   #集計対象のチケットを登録
@@ -39,10 +42,6 @@ class UserTasks
   #バージョンの予定工数のうち作業済みの割合（終了状態を除いて）
   def done_percent
     return @task_info_collector.done_percent
-  end
-
-  def done_date
-    return start_date + ((due_date - start_date + 1)*(complete_percent+done_percent)/100).floor
   end
 
   #完了予想日

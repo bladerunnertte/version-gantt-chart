@@ -1,8 +1,12 @@
-<% zoom = 5
+<% content_for :header_tags do -%>
+  <%= stylesheet_link_tag 'version_gantt_chart', :plugin => 'redmine_version_gantt_chart' %>
+<% end -%>
+<% zoom = 1
 @gantt.zoom.times { zoom = zoom * 2 }
 
-subject_width = 330
+subject_width = 150
 header_heigth = 18
+row_heigth = 30
 
 headers_height = header_heigth
 show_weeks = true
@@ -10,7 +14,7 @@ show_days = true
 headers_height = 3*header_heigth
 
 g_width = (@gantt.date_to - @gantt.date_from + 1)*zoom
-g_height = [(20 * @gantt.events.length + 6)+150, 206].max
+g_height = [(row_heigth * @gantt.events.length + 6)+150, 206].max
 t_height = g_height + headers_height
 %>
 
@@ -26,14 +30,16 @@ t_height = g_height + headers_height
 # Tasks subjects
 #
 top = headers_height + 8
-pre_user_name = ''
-@gantt.events.each do |i| %>
-    <div style="position: absolute;line-height:1.2em;height:16px;top:<%= top %>px;left:4px;overflow:hidden;"><small>
-    <%= h(i.user.name == pre_user_name ? '' : "#{i.user.name}") %>
-    <% pre_user_name = i.user.name %>
-    </small></div>
-    <% top = top + 20
-end %>
+pre_user_name = ''%>
+<% @gantt.events.each do |i| %>
+    <div style="position: absolute;line-height:1.2em;height:16px;top:<%= top %>px;left:4px;overflow:hidden;">
+    <% if i.user.name != pre_user_name %>
+      <%= "#{i.user.name}" %>
+      <% pre_user_name = i.user.name %>
+    <% end %>
+    </div>
+    <% top = top + row_heigth %>
+<% end %>
 </div>
 </td>
 <td>
@@ -121,33 +127,30 @@ top = headers_height + 10
   i_start_date = (i.start_date >= @gantt.date_from ? i.start_date : @gantt.date_from )
   i_end_date = (i.due_date <= @gantt.date_to ? i.due_date : @gantt.date_to )
   
-  i_done_date = (i.done_date <= @gantt.date_from ? @gantt.date_from : i.done_date )
-  i_done_date = (i_done_date >= @gantt.date_to ? @gantt.date_to : i_done_date )
-  
   i_late_date = [i_end_date, Date.today].min if i_start_date < Date.today
   
   i_left = ((i_start_date - @gantt.date_from)*zoom).floor   
   i_width = ((i_end_date - i_start_date + 1)*zoom).floor - 2                  # total width of the issue (- 2 for left and right borders)
-  d_width = ((i_done_date - i_start_date)*zoom).floor - 2                     # done width
+  c_width = ((i_end_date - i_start_date + 1)*zoom*i.complete_percent/100).floor - 2                    # complete width
+  d_width = ((i_end_date - i_start_date + 1)*zoom*(i.done_percent + i.complete_percent)/100).floor - 2                     # done width
   l_width = i_late_date ? ((i_late_date - i_start_date+1)*zoom).floor - 2 : 0 # delay width
   %>
-  <div style="top:<%= top %>px;left:<%= i_left %>px;width:<%= i_width %>px;" class="task task_todo">&nbsp;</div>
+  <div style="top:<%= top %>px;left:<%= i_left %>px;width:<%= i_width %>px;" class="version_task version_task_todo">&nbsp;</div>
   <% if l_width > 0 %>
-      <div style="top:<%= top %>px;left:<%= i_left %>px;width:<%= l_width %>px;" class="task task_late">&nbsp;</div>
+      <div style="top:<%= top %>px;left:<%= i_left %>px;width:<%= l_width %>px;" class="version_task version_task_late">&nbsp;</div>
   <% end %>
   <% if d_width > 0 %>
-      <div style="top:<%= top %>px;left:<%= i_left %>px;width:<%= d_width %>px;" class="task task_done">&nbsp;</div>
+      <div style="top:<%= top %>px;left:<%= i_left %>px;width:<%= d_width %>px;" class="version_task version_task_done">&nbsp;</div>
   <% end %>
-  <div style="top:<%= top %>px;left:<%= i_left + i_width + 5 %>px;background:#fff;" class="task">
-  <%= "#{i.version.name} - #{i.version.project.name}" %>
-  <%= (i.done_percent + i.complete_percent).to_i %>%
+  <% if c_width > 0 %>
+      <div style="top:<%= top %>px;left:<%= i_left %>px;width:<%= c_width %>px;" class="version_task version_task_complete">&nbsp;</div>
+  <% end %>
+  <div class="tooltip" style="position: absolute;top:<%= top %>px;left:<%= i_left+i_width+zoom %>px;width:300px;height:12px;">
+    <%= "#{i.name}" %>
   </div>
-  <div class="tooltip" style="position: absolute;top:<%= top %>px;left:<%= i_left %>px;width:<%= i_width %>px;height:12px;">
-  <span class="tip">
-  </span></div>
-
+  
 <% end %>
-<% top = top + 20
+<% top = top + row_heigth
 end %>
 
 <%
