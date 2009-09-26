@@ -11,7 +11,7 @@ class TaskInfoCollector
 
   def estimated_hours_of( issue )
     if issue.estimated_hours
-      return issue.estimated_hourss
+      return issue.estimated_hours
     else
       return DEFAULT_ESTIMATED_HOURS 
     end
