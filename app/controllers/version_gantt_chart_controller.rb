@@ -1,5 +1,5 @@
 require 'user_tasks'
-require 'without_events_sort_gantt'
+require 'user_task_gantt'
 
 class VersionGanttChartController < ApplicationController
   unloadable
@@ -22,7 +22,7 @@ class VersionGanttChartController < ApplicationController
 
     from_date = Date.today - 15
     months = from_date.month == Date.today.month ? 3 : 4 
-    @gantt = WithoutEventsSortGantt.new(:months=>4, :year=>from_date.year, :month=>from_date.month, :months=>months)
+    @gantt = UserTaskGantt.new(:months=>4, :year=>from_date.year, :month=>from_date.month, :months=>months)
     @gantt.events = events.sort
   end
 end

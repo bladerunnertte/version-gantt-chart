@@ -41,9 +41,12 @@ class TaskInfoCollector
     return estimated_days.ceil
   end
   
+  def remain_estimated_hours
+    return @estimated_hours - @complete_hours - @done_hours
+  end
+
   def remain_estimated_days
-    remain_hours = @estimated_hours - @complete_hours - @done_hours
-    remain_estimated_days = remain_hours / WORKABLE_HOUR_A_DAY
+    remain_estimated_days = remain_estimated_hours / WORKABLE_HOUR_A_DAY
     return remain_estimated_days.ceil
   end
 

@@ -16,6 +16,10 @@ class UserTasks
     return "#{@version.name} - #{@version.project.name}"
   end
 
+  def finished?
+    return @task_info_collector.remain_estimated_hours == 0
+  end
+
   #集計対象のチケットを登録
   def add( issue )
     if( issue.assigned_to == @user && issue.fixed_version == @version )
