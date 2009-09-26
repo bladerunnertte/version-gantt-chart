@@ -53,4 +53,16 @@ class UserTasks
   def over_days
     return @task_info_collector.over_days
   end
+
+  #比較メソッド（ソート用）
+  def <=>(other)
+    compared_result = @user.name <=> other.user.name
+    if compared_result == 0
+      compared_result = due_date <=> other.due_date
+    end
+    if compared_result == 0
+      compared_result = start_date <=> other.start_date
+    end
+    return compared_result
+  end
 end

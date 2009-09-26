@@ -1,7 +1,7 @@
 <% content_for :header_tags do -%>
   <%= stylesheet_link_tag 'version_gantt_chart', :plugin => 'redmine_version_gantt_chart' %>
 <% end -%>
-<% zoom = 1
+<% zoom = 2
 @gantt.zoom.times { zoom = zoom * 2 }
 
 subject_width = 150

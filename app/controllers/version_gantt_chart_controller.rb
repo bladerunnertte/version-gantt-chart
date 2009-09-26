@@ -1,4 +1,5 @@
 require 'user_tasks'
+require 'without_events_sort_gantt'
 
 class VersionGanttChartController < ApplicationController
   unloadable
@@ -18,8 +19,8 @@ class VersionGanttChartController < ApplicationController
         end
       end
     end
-    
-    @gantt = Redmine::Helpers::Gantt.new
-    @gantt.events = events
+
+    @gantt = WithoutEventsSortGantt.new
+    @gantt.events = events.sort
   end
 end
