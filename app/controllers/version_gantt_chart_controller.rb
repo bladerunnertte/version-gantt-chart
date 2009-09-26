@@ -20,7 +20,9 @@ class VersionGanttChartController < ApplicationController
       end
     end
 
-    @gantt = WithoutEventsSortGantt.new
+    from_date = Date.today - 15
+    months = from_date.month == Date.today.month ? 3 : 4 
+    @gantt = WithoutEventsSortGantt.new(:months=>4, :year=>from_date.year, :month=>from_date.month, :months=>months)
     @gantt.events = events.sort
   end
 end
