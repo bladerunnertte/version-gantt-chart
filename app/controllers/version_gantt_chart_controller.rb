@@ -1,6 +1,7 @@
 require 'user_tasks'
 
 class VersionGanttChartController < ApplicationController
+  unloadable
 
   def index
     events = []

@@ -1,5 +1,6 @@
 class TaskInfoCollector
   WORKABLE_HOUR_A_DAY = 6
+  DEFAULT_ESTIMATED_HOURS = 6
   def initialize
     @estimated_hours = 0
     @complete_hours = 0
@@ -7,6 +8,21 @@ class TaskInfoCollector
     @complete_over_hours = 0
     @done_over_hours = 0
   end
+
+  def estimated_hours_of( issue )
+    if issue.estimated_hours
+      return issue.estimated_hourss
+    else
+      return DEFAULT_ESTIMATED_HOURS 
+    end
+  end
+  private :estimated_hours_of
+  
+  def done_hours_of( issue )
+    return 0 unless issue.done_ratio
+    return estimated_hours_of( issue ) * issue.done_ratio / 100.0
+  end
+  private :done_hours_of
   
   def add( issue )
     add_estimated_hours issue.estimated_hours
@@ -15,9 +31,8 @@ class TaskInfoCollector
       add_complete_hours issue.estimated_hours
       add_complete_over_hours issue.spent_hours - issue.estimated_hours
     else
-      done_ratio = issue.done_ratio / 100.0
-      add_done_hours( issue.estimated_hours *  done_ratio )
-      add_done_over_hours( issue.spent_hours - (issue.estimated_hours * done_ratio) )
+      add_done_hours( done_hours_of(issue) )
+      add_done_over_hours( issue.spent_hours - done_hours_of(issue) )
     end
   end
 
@@ -38,15 +53,21 @@ class TaskInfoCollector
   end
 
   def complete_percent
-     return ratio_to_percent(@complete_hours / @estimated_hours)
+    return ratio_to_percent( divide_by_estimated_hours(@complete_hours))
   end
   
   def done_percent
-     return ratio_to_percent(@done_hours / @estimated_hours)
+    return ratio_to_percent( divide_by_estimated_hours(@done_hours))
   end
 
+  def divide_by_estimated_hours( target_hours )
+    return 1.0 if @estimated_hours == 0
+    return target_hours / @estimated_hours
+  end
+  private :divide_by_estimated_hours
+
   def add_estimated_hours( new_hours )
-    @estimated_hours += new_hours
+    @estimated_hours += new_hours if new_hours
   end
   private :add_estimated_hours
 
