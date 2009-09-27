@@ -1,7 +1,7 @@
 <% content_for :header_tags do -%>
   <%= stylesheet_link_tag 'version_gantt_chart', :plugin => 'redmine_version_gantt_chart' %>
 <% end -%>
-<% zoom = 2
+<% zoom = 3
 @gantt.zoom.times { zoom = zoom * 2 }
 
 subject_width = 150
@@ -145,10 +145,20 @@ top = headers_height + 10
   <% if c_width > 0 %>
       <div style="top:<%= top %>px;left:<%= i_left %>px;width:<%= c_width %>px;" class="version_task version_task_complete">&nbsp;</div>
   <% end %>
-  <div class="tooltip" style="position: absolute;top:<%= top %>px;left:<%= i_left+i_width+zoom %>px;width:300px;height:12px;">
+
+  <% next_left = i_left + i_width + 2 %>
+  <% if i.finished? == false && i.due_date < i.able_day %>
+    <% offset = ((i.able_day - i.due_date)*zoom).floor %>
+    <% next_left = next_left + offset %>
+    <div style="top:<%= top %>px;left:<%= next_left %>px;width:<%= zoom %>px;" class="version_task version_task_end_date">&nbsp;</div>
+    <% next_left = next_left + zoom + 2 %>
+  <% end %>
+  
+  <div class="tooltip" style="position: absolute;top:<%= top %>px;left:<%= next_left %>px;width:300px;height:12px;">
     <%= "#{i.name}" %>
   </div>
-  
+
+
 <% end %>
 <% top = top + row_heigth
 end %>
