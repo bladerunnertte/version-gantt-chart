@@ -2,6 +2,7 @@ require 'user_tasks'
 require 'user_task_gantt'
 
 class VersionGanttChartController < ApplicationController
+  helper :projects
   unloadable
 
   def index

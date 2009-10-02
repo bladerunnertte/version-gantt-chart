@@ -1,5 +1,5 @@
 class UserTasks
-  attr_reader :user
+  attr_reader :user, :version
 
   def initialize( user, version )
     @user = user
@@ -10,10 +10,6 @@ class UserTasks
 
   def empty?
     return @empty
-  end
-
-  def name
-    return "#{@version.name} - #{@version.project.name}"
   end
 
   def finished?

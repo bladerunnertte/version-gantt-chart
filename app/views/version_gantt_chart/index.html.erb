@@ -1,7 +1,7 @@
 <% content_for :header_tags do -%>
   <%= stylesheet_link_tag 'version_gantt_chart', :plugin => 'redmine_version_gantt_chart' %>
 <% end -%>
-<% zoom = 3
+<% zoom = 2
 @gantt.zoom.times { zoom = zoom * 2 }
 
 subject_width = 150
@@ -34,7 +34,7 @@ pre_user_name = ''%>
 <% @gantt.events.each do |i| %>
     <div style="position: absolute;line-height:1.2em;height:16px;top:<%= top %>px;left:4px;overflow:hidden;">
     <% if i.user.name != pre_user_name %>
-      <%= "#{i.user.name}" %>
+      <%= link_to_user i.user %>
       <% pre_user_name = i.user.name %>
     <% end %>
     </div>
@@ -155,10 +155,8 @@ top = headers_height + 10
   <% end %>
   
   <div class="tooltip" style="position: absolute;top:<%= top %>px;left:<%= next_left %>px;width:300px;height:12px;">
-    <%= "#{i.name}" %>
+    <%= link_to_version i.version %>-<%= link_to h(i.version.project.name), {:action => 'show', :id => i.version.project} %>
   </div>
-
-
 <% end %>
 <% top = top + row_heigth
 end %>
