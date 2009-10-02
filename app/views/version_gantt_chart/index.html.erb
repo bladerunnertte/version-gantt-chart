@@ -176,20 +176,5 @@ if Date.today >= @gantt.date_from and Date.today <= @gantt.date_to %>
 </tr>
 </table>
 
-<table width="100%">
-<tr>
-<td align="left"><%= link_to_remote ('&#171; ' + l(:label_previous)), {:url => @gantt.params_previous, :update => 'content', :complete => 'window.scrollTo(0,0)'}, {:href => url_for(@gantt.params_previous)} %></td>
-<td align="right"><%= link_to_remote (l(:label_next) + ' &#187;'), {:url => @gantt.params_next, :update => 'content', :complete => 'window.scrollTo(0,0)'}, {:href => url_for(@gantt.params_next)} %></td>
-</tr>
-</table>
-
-<p class="other-formats">
-<%= l(:label_export_to) %>
-<span><%= link_to 'PDF', @gantt.params.merge(:format => 'pdf'), :class => 'pdf' %></span>
-<% if @gantt.respond_to?('to_image') %>
-<span><%= link_to 'PNG', @gantt.params.merge(:format => 'png'), :class => 'image' %></span>
-<% end %>
-</p>
-
 
 <% html_title(l("進捗状況")) -%>
