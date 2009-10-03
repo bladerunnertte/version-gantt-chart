@@ -1,3 +1,4 @@
 = version_gantt_chart
 
-Description goes here
+This plugin displays user workload and progress of version.
+You can see other user's progress of the version, if you were project member.
