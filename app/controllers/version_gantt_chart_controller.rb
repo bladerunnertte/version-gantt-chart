@@ -10,8 +10,11 @@ class VersionGanttChartController < ApplicationController
 
     user_list = User.find(:all)
     user_list.each do |user|
-      user.projects.each do |project|
-        if project.active? && ( User.current.admin? || User.current.member_of?(project) )
+      projects = Project.find :all,
+                            :conditions => Project.visible_by(User.current),
+                            :include => :parent
+      projects.each do |project|
+        if project.active?
           project.versions.each do |version|
             user_tasks = UserTasks.new( user, version )
             version.fixed_issues.each do |issue|
