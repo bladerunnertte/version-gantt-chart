@@ -9,6 +9,7 @@ class VersionGanttChartController < ApplicationController
     events = []
 
     user_list = User.find(:all)
+    user_list.push NobodyUser.new
     user_list.each do |user|
       projects = Project.find :all,
                             :conditions => Project.visible_by(User.current),
