@@ -31,10 +31,24 @@ t_height = g_height + headers_height
 #
 top = headers_height + 8
 pre_user_name = ''%>
+<%
+def red_label( label_text )
+   '<FONT COLOR="#FF0000">'+l(label_text)+'</FONT>'
+end
+def link_to_user_unless_nil( user )
+  user == nil ? red_label(:unassigned) : link_to_user(user)
+end
+def link_to_version_unless_nil( version )
+  version == nil ? red_label(:unassigned) : link_to_version(version)
+end
+def link_to_project( project )
+  link_to(h(project.name),{:controller=>'projects',:action=>'show',:id=>project})
+end
+%>
 <% @gantt.events.each do |i| %>
     <div style="position: absolute;line-height:1.2em;height:16px;top:<%= top %>px;left:4px;overflow:hidden;">
     <% if i.user.name != pre_user_name %>
-      <%= i.user == nil ? '<FONT COLOR="#FF0000">'+l(:unassigned)+'</FONT>' : link_to_user(i.user) %>
+      <%= link_to_user_unless_nil(i.user) %>
       <% pre_user_name = i.user.name %>
     <% end %>
     </div>
@@ -155,7 +169,7 @@ top = headers_height + 10
   <% end %>
   
   <div class="tooltip" style="position: absolute;top:<%= top-3 %>px;left:<%= next_left %>px;width:300px;height:12px;">
-    <%= i.version == nil ? '<FONT COLOR="#FF0000">'+l(:unassigned)+'</FONT>' : link_to_version(i.version) %> - <%= link_to(h(i.version.project.name),{:controller=>'projects',:action=>'show',:id=>i.version.project}) %>
+    <%= link_to_version_unless_nil(i.version) %> - <%= link_to_project(i.version.project) %>
   </div>
 <% end %>
 <% top = top + row_heigth
