@@ -34,7 +34,7 @@ pre_user_name = ''%>
 <% @gantt.events.each do |i| %>
     <div style="position: absolute;line-height:1.2em;height:16px;top:<%= top %>px;left:4px;overflow:hidden;">
     <% if i.user.name != pre_user_name %>
-      <%= link_to_user i.user %>
+      <%= i.user == nil ? '<FONT COLOR="#FF0000">'+l(:unassigned)+'</FONT>' : link_to_user(i.user) %>
       <% pre_user_name = i.user.name %>
     <% end %>
     </div>
@@ -155,7 +155,7 @@ top = headers_height + 10
   <% end %>
   
   <div class="tooltip" style="position: absolute;top:<%= top-3 %>px;left:<%= next_left %>px;width:300px;height:12px;">
-    <%= link_to_version i.version %>-<%= link_to h(i.version.project.name), {:controller=>'projects', :action => 'show', :id => i.version.project} %>
+    <%= i.version == nil ? '<FONT COLOR="#FF0000">'+l(:unassigned)+'</FONT>' : link_to_version(i.version) %> - <%= link_to(h(i.version.project.name),{:controller=>'projects',:action=>'show',:id=>i.version.project}) %>
   </div>
 <% end %>
 <% top = top + row_heigth
