@@ -155,7 +155,7 @@ top = headers_height + 10
       <div style="top:<%= top %>px;left:<%= i_left %>px;width:<%= l_width %>px;" class="version_task version_task_late">&nbsp;</div>
     <% end %>
 
-    <% d_width = days_to_width(i_total_days, zoom, i.complete_percent) # done width %>
+    <% d_width = days_to_width(i_total_days, zoom, i.complete_percent+i.done_percent) # done width %>
     <% if d_width > 0 %>
       <div style="top:<%= top %>px;left:<%= i_left %>px;width:<%= d_width %>px;" class="version_task version_task_done">&nbsp;</div>
     <% end %>
