@@ -18,6 +18,12 @@ class UserTasks
 
   #集計対象のチケットを登録
   def add( issue )
+    #バージョン未設定で終了済みのチケットは集計対象から外す
+    if issue.fixed_version == nil && issue.closed?
+      return
+    end
+
+    #ユーザとバージョンが一致するチケットを集計対象として登録する
     if( @user == issue.assigned_to && @version == issue.fixed_version )
       @empty = false
       @task_info_collector.add(issue)
