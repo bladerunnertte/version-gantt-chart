@@ -16,17 +16,16 @@ class TaskInfoCollector
   end
   
   def add( issue )
-    issue.spent_hours = 0 unless issue.spent_hours
     add_estimated_hours estimated_hours_of(issue)
 
     if issue.closed?
       @closed_issue_count += 1
       add_complete_hours estimated_hours_of(issue)
-      add_complete_over_hours issue.spent_hours - estimated_hours_of(issue)
+      add_complete_over_hours spent_hours_of(issue) - estimated_hours_of(issue)
     else
       @open_issue_count += 1
       add_done_hours( done_hours_of(issue) )
-      add_done_over_hours( issue.spent_hours - done_hours_of(issue) )
+      add_done_over_hours( spent_hours_of(issue) - done_hours_of(issue) )
     end
   end
 
@@ -58,6 +57,14 @@ class TaskInfoCollector
   end
 
 private
+  def spent_hours_of( issue )
+    if issue.spent_hours
+      return issue.spent_hours
+    else
+      return 0 
+    end
+  end
+
   def estimated_hours_of( issue )
     if issue.estimated_hours
       return issue.estimated_hours
