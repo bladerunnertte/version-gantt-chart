@@ -76,4 +76,21 @@ class UserTasks
   def count_issues
     return @task_info_collector.count_of_added
   end
+
+  #Issueリストフィルタ用
+  def filter_fields
+    fields = ["assigned_to_id","fixed_version_id"]
+  end
+  def filter_operators
+    operators = {}
+    operators["assigned_to_id"] = @user == nil ? "!*" : "="
+    operators["fixed_version_id"] = @version == nil ? "!*" : "="
+    return operators
+  end
+  def filter_values
+    values = {}
+    values["assigned_to_id"] = (@user == nil) ? [""] : [@user.id] 
+    values["fixed_version_id"] = (@version == nil) ? [""] : [@version.id]
+    return values
+  end
 end
