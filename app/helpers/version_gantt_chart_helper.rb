@@ -3,6 +3,7 @@ module VersionGanttChartHelper
     link_text = "#{link_to_version_unless_nil(usertask.version)}"
     link_text << " - "
     link_text << "#{link_to_project(usertask.version.project)}"
+    link_text << "<br>"
     link_text << link_to_usertask_issues( usertask )
   end
 
