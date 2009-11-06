@@ -7,7 +7,6 @@ module VersionGanttChartHelper
   end
 
   def link_to_usertask_issues( usertask )
-    count_of_issues = "(#{usertask.count_issues.to_s})"
     link_params = {:controller => 'issues',
                   :action => 'index',
                   :project_id => usertask.version.project.id,
@@ -15,6 +14,21 @@ module VersionGanttChartHelper
                   :fields => usertask.filter_fields,
                   :operators => usertask.filter_operators,
                   :values => usertask.filter_values }
-    link_text = " #{link_to( count_of_issues, link_params)}"
+
+    link_text = ""
+
+    if usertask.closed_issue_count > 0 
+      closed_issue_text = " #{l(:label_closed_issues)}(#{usertask.closed_issue_count})"
+      link_params[:operators]["status_id"] = "c"
+      link_text << " #{link_to(closed_issue_text, link_params)}"
+    end
+
+    if usertask.open_issue_count > 0
+      open_issue_text = " #{l(:label_open_issues)}(#{usertask.open_issue_count})"
+      link_params[:operators]["status_id"] = "o"
+      link_text << " #{link_to(open_issue_text, link_params)}"
+    end
+
+    return link_text
   end
 end

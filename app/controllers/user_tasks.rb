@@ -73,22 +73,27 @@ class UserTasks
   end
 
   #チケット数
-  def count_issues
-    return @task_info_collector.count_of_added
+  def closed_issue_count
+    return @task_info_collector.closed_issue_count
+  end
+  def open_issue_count
+    return @task_info_collector.open_issue_count
   end
 
   #Issueリストフィルタ用
   def filter_fields
-    fields = ["assigned_to_id","fixed_version_id"]
+    fields = ["status_id","assigned_to_id","fixed_version_id"]
   end
   def filter_operators
     operators = {}
+    operators["status_id"] = "*"
     operators["assigned_to_id"] = @user == nil ? "!*" : "="
     operators["fixed_version_id"] = @version == nil ? "!*" : "="
     return operators
   end
   def filter_values
     values = {}
+    values["status_id"] = [""]
     values["assigned_to_id"] = (@user == nil) ? [""] : [@user.id] 
     values["fixed_version_id"] = (@version == nil) ? [""] : [@version.id]
     return values

@@ -2,7 +2,8 @@ class TaskInfoCollector
   WORKABLE_HOUR_A_DAY = 6
   DEFAULT_ESTIMATED_HOURS = 6
 
-  attr_reader :count_of_added
+  attr_reader :closed_issue_count
+  attr_reader :open_issue_count
 
   def initialize
     @estimated_hours = 0
@@ -10,7 +11,8 @@ class TaskInfoCollector
     @done_hours = 0
     @complete_over_hours = 0
     @done_over_hours = 0
-    @count_of_added = 0
+    @closed_issue_count = 0
+    @open_issue_count = 0
   end
 
   def estimated_hours_of( issue )
@@ -29,15 +31,15 @@ class TaskInfoCollector
   private :done_hours_of
   
   def add( issue )
-    @count_of_added += 1
-
     issue.spent_hours = 0 unless issue.spent_hours
     add_estimated_hours estimated_hours_of(issue)
 
     if issue.closed?
+      @closed_issue_count += 1
       add_complete_hours issue.estimated_hours
       add_complete_over_hours issue.spent_hours - issue.estimated_hours
     else
+      @open_issue_count += 1
       add_done_hours( done_hours_of(issue) )
       add_done_over_hours( issue.spent_hours - done_hours_of(issue) )
     end
