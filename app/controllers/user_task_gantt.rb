@@ -11,15 +11,13 @@ class UserTaskGantt < Redmine::Helpers::Gantt
     @events = e
   end
 
-
+private
   def too_old?( task )
     return task.due_date < @date_from
   end
-  private :too_old?
 
   def too_far_future?( task )
     return task.start_date > @date_to
   end
-  private :too_far_future?
 end
 
