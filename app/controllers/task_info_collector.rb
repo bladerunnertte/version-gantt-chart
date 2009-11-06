@@ -26,9 +26,7 @@ class TaskInfoCollector
   
   def add( issue )
     issue.spent_hours = 0 unless issue.spent_hours
-    issue.estimated_hours = 6 unless issue.estimated_hours
-
-    add_estimated_hours issue.estimated_hours
+    add_estimated_hours estimated_hours_of(issue)
 
     if issue.closed?
       add_complete_hours issue.estimated_hours
