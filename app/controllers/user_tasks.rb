@@ -71,4 +71,9 @@ class UserTasks
     end
     return compared_result
   end
+
+  #チケット数
+  def count_issues
+    return @task_info_collector.count_of_added
+  end
 end

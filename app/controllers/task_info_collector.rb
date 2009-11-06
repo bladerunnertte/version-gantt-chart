@@ -1,12 +1,16 @@
 class TaskInfoCollector
   WORKABLE_HOUR_A_DAY = 6
   DEFAULT_ESTIMATED_HOURS = 6
+
+  attr_reader :count_of_added
+
   def initialize
     @estimated_hours = 0
     @complete_hours = 0
     @done_hours = 0
     @complete_over_hours = 0
     @done_over_hours = 0
+    @count_of_added = 0
   end
 
   def estimated_hours_of( issue )
@@ -25,6 +29,8 @@ class TaskInfoCollector
   private :done_hours_of
   
   def add( issue )
+    @count_of_added += 1
+
     issue.spent_hours = 0 unless issue.spent_hours
     add_estimated_hours estimated_hours_of(issue)
 
