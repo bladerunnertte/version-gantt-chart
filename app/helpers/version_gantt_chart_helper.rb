@@ -32,4 +32,24 @@ module VersionGanttChartHelper
 
     return link_text
   end
+
+  def red_label( label_text )
+     '<FONT COLOR="#FF0000">'+l(label_text)+'</FONT>'
+  end
+
+  def link_to_user_unless_nil( user )
+    user == nil ? red_label(:unassigned) : link_to_user(user)
+  end
+
+  def link_to_version_unless_nil( version )
+    version == nil ? red_label(:unassigned) : link_to_version(version)
+  end
+
+  def link_to_project( project )
+    link_to(h(project.name),{:controller=>'projects',:action=>'show',:id=>project})
+  end
+
+  def days_to_width( days,zoom,percent=100 )
+    (days*zoom*percent/100).floor - 2 #- 2 for left and right borders
+  end
 end
