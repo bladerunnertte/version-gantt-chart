@@ -132,8 +132,8 @@ top = headers_height + 10
     %>
     <div style="top:<%= top %>px;left:<%= i_left %>px;width:<%= i_width %>px;" class="version_task version_task_todo">&nbsp;</div>
 
-    <% i_late_date = [i_end_date, Date.today].min if i_start_date < Date.today %>
-    <% l_width = i_late_date ? days_to_width(i_total_days,zoom) : 0   # delay width %>
+    <% late_days = [i_end_date, Date.today].min - i_start_date + 1 if i_start_date < Date.today %>
+    <% l_width = late_days ? days_to_width(late_days,zoom) : 0   # delay width %>
     <% if l_width > 0 %>
       <div style="top:<%= top %>px;left:<%= i_left %>px;width:<%= l_width %>px;" class="version_task version_task_late">&nbsp;</div>
     <% end %>
