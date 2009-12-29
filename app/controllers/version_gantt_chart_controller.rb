@@ -8,9 +8,7 @@ class VersionGanttChartController < ApplicationController
   def index
     events = []
 
-    projects = Project.find :all,
-                          :conditions => Project.visible_by(User.current),
-                          :include => :parent
+    projects = Project.find :all, :conditions => Project.visible_by(User.current)
     user_list = User.find(:all)
     user_list.push NobodyUser.new
     user_list.each do |user|
