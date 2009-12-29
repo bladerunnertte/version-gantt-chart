@@ -1,3 +1,4 @@
-label_title: "Progress of Versions"
-label_menu: "VersionGanttChart"
-unassigned: "None"
+en:
+ label_title: "Progress of Versions"
+ label_menu: "VersionGanttChart"
+ unassigned: "None"
