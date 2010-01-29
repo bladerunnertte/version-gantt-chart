@@ -1,0 +1,180 @@
+<% content_for :header_tags do -%>
+  <%= stylesheet_link_tag 'version_gantt_chart', :plugin => 'redmine_version_gantt_chart' %>
+<% end -%>
+<% zoom = 2
+@gantt.zoom.times { zoom = zoom * 2 }
+
+subject_width = 150
+header_heigth = 18
+row_heigth = 40
+
+headers_height = header_heigth
+show_weeks = true
+show_days = true
+headers_height = 3*header_heigth
+
+g_width = (@gantt.date_to - @gantt.date_from + 1)*zoom
+g_height = [(row_heigth * @gantt.events.length + 6)+150, 206].max
+t_height = g_height + headers_height
+%>
+
+<table width="100%" style="border:0; border-collapse: collapse;">
+<tr>
+<td style="width:<%= subject_width %>px; padding:0px;">
+
+<div style="position:relative;height:<%= t_height + 24 %>px;width:<%= subject_width + 1 %>px;">
+<div style="right:-2px;width:<%= subject_width %>px;height:<%= headers_height %>px;background: #eee;" class="gantt_hdr"></div>
+<div style="right:-2px;width:<%= subject_width %>px;height:<%= t_height %>px;border-left: 1px solid #c0c0c0;overflow:hidden;" class="gantt_hdr"></div>
+<%
+#
+# Tasks subjects
+#
+top = headers_height + 8
+pre_user_name = ''%>
+<% @gantt.events.each do |i| %>
+    <div style="position: absolute;line-height:1.2em;height:16px;top:<%= top %>px;left:4px;overflow:hidden;">
+    <% if i.user.name != pre_user_name %>
+      <%= link_to_user_unless_nil(i.user) %>
+      <% pre_user_name = i.user.name %>
+    <% end %>
+    </div>
+    <% top = top + row_heigth %>
+<% end %>
+</div>
+</td>
+<td>
+
+<div style="position:relative;height:<%= t_height + 24 %>px;overflow:auto;">
+<div style="width:<%= g_width-1 %>px;height:<%= headers_height %>px;background: #eee;" class="gantt_hdr">&nbsp;</div>
+<% 
+#
+# Months headers
+#
+month_f = @gantt.date_from
+left = 0
+height = (show_weeks ? header_heigth : header_heigth + g_height)
+@gantt.months.times do 
+  width = ((month_f >> 1) - month_f) * zoom - 1
+  %>
+  <div style="left:<%= left %>px;width:<%= width %>px;height:<%= height %>px;" class="gantt_hdr">
+  <%= link_to "#{month_f.year}-#{month_f.month}", @gantt.params.merge(:year => month_f.year, :month => month_f.month), :title => "#{month_name(month_f.month)} #{month_f.year}"%>
+  </div>
+  <% 
+  left = left + width + 1
+  month_f = month_f >> 1
+end %>
+
+<% 
+#
+# Weeks headers
+#
+if show_weeks
+  left = 0
+  height = (show_days ? header_heigth-1 : header_heigth-1 + g_height)
+  if @gantt.date_from.cwday == 1
+      # @date_from is monday
+        week_f = @gantt.date_from
+  else
+      # find next monday after @date_from
+    week_f = @gantt.date_from + (7 - @gantt.date_from.cwday + 1)
+    width = (7 - @gantt.date_from.cwday + 1) * zoom-1
+    %>
+    <div style="left:<%= left %>px;top:19px;width:<%= width %>px;height:<%= height %>px;" class="gantt_hdr">&nbsp;</div>
+    <% 
+    left = left + width+1
+  end %>
+  <%
+  while week_f <= @gantt.date_to
+    width = (week_f + 6 <= @gantt.date_to) ? 7 * zoom -1 : (@gantt.date_to - week_f + 1) * zoom-1
+    %>
+    <div style="left:<%= left %>px;top:19px;width:<%= width %>px;height:<%= height %>px;" class="gantt_hdr">
+    <small><%= week_f.cweek if width >= 16 %></small>
+    </div>
+    <% 
+    left = left + width+1
+    week_f = week_f+7
+  end
+end %>
+
+<% 
+#
+# Days headers
+#
+if show_days
+  left = 0
+  height = g_height + header_heigth - 1
+  wday = @gantt.date_from.cwday %>
+  <% (@gantt.date_to - @gantt.date_from + 1).to_i.times do 
+    width =  zoom - 1
+    %>
+    <div style="left:<%= left %>px;top:37px;width:<%= width %>px;height:<%= height %>px;font-size:0.7em;<%= "background:#f1f1f1;" if wday > 5 %>" class="gantt_hdr">
+    <%= day_name(wday).first %>
+    </div>
+    <% 
+    left = left + width+1
+    wday = wday + 1
+    wday = 1 if wday > 7
+  end %>
+<% end %>
+
+<%
+#
+# Tasks
+#
+top = headers_height + 10
+@gantt.events.each do |i| 
+  if i.is_a? UserTasks 
+    i_start_date = (i.start_date >= @gantt.date_from ? i.start_date : @gantt.date_from )
+    i_end_date = (i.due_date <= @gantt.date_to ? i.due_date : @gantt.date_to )
+    i_total_days = i_end_date - i_start_date + 1
+    i_left = ((i_start_date - @gantt.date_from)*zoom).floor   
+    i_width = days_to_width(i_total_days,zoom)                     # total width of the issue
+    %>
+    <div style="top:<%= top %>px;left:<%= i_left %>px;width:<%= i_width %>px;" class="version_task version_task_todo">&nbsp;</div>
+
+    <% late_days = [i_end_date, Date.today].min - i_start_date + 1 if i_start_date < Date.today %>
+    <% l_width = late_days ? days_to_width(late_days,zoom) : 0   # delay width %>
+    <% if l_width > 0 %>
+      <div style="top:<%= top %>px;left:<%= i_left %>px;width:<%= l_width %>px;" class="version_task version_task_late">&nbsp;</div>
+    <% end %>
+
+    <% d_width = days_to_width(i_total_days, zoom, i.complete_percent+i.done_percent) # done width %>
+    <% if d_width > 0 %>
+      <div style="top:<%= top %>px;left:<%= i_left %>px;width:<%= d_width %>px;" class="version_task version_task_done">&nbsp;</div>
+    <% end %>
+
+    <% c_width = days_to_width(i_total_days,zoom, i.complete_percent) # complete width %>
+    <% if c_width > 0 %>
+      <div style="top:<%= top %>px;left:<%= i_left %>px;width:<%= c_width %>px;" class="version_task version_task_complete">&nbsp;</div>
+    <% end %>
+
+    <% next_left = i_left + i_width + 2 %>
+    <% if i.finished? == false && i.due_date < i.able_day %>
+      <% offset = ((i.able_day - i.due_date)*zoom).floor + (zoom - 12)/2 #12ピクセルの画像を幅(zoom)の中央にずらした %>
+      <% next_left = next_left + offset %>
+      <div style="top:<%= top %>px;left:<%= next_left %>px;width:<%= zoom %>px;" class="version_task version_task_end_date">&nbsp;</div>
+      <% next_left = next_left + zoom + 2 %>
+    <% end %>
+  
+    <div class="tooltip" style="position: absolute;top:<%= top-3 %>px;left:<%= next_left %>px;width:300px;height:12px;">
+      <%= link_to_usertask(i) %>
+    </div>
+  <% end %>
+  <% top = top + row_heigth
+end %>
+
+<%
+#
+# Today red line (excluded from cache)
+#
+if Date.today >= @gantt.date_from and Date.today <= @gantt.date_to %>
+    <div style="position: absolute;height:<%= g_height %>px;top:<%= headers_height + 1 %>px;left:<%= ((Date.today-@gantt.date_from+1)*zoom).floor()-1 %>px;width:10px;border-left: 1px dashed red;">&nbsp;</div>
+<% end %>
+
+</div>
+</td>
+</tr>
+</table>
+
+
+<% html_title(l(:label_title)) -%>
