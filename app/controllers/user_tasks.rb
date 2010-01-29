@@ -62,6 +62,15 @@ class UserTasks
 
   #比較メソッド（ソート用）
   def <=>(other)
+    #未設定を前にまとめる
+    return -1 if @user == nil && !(other.user == nil)
+    return 1 if !(@user == nil) && other.user == nil
+
+    #ユーザグループを後ろにまとめる
+    return -1 if @user.kind_of?(User) && !other.user.kind_of?(User)
+    return 1 if !@user.kind_of?(User) && other.user.kind_of?(User)
+
+    #同じクラスは名簿順でソート
     compared_result = @user.name <=> other.user.name
     if compared_result == 0
       compared_result = due_date <=> other.due_date
