@@ -36,7 +36,13 @@ module VersionGanttChartHelper
   end
 
   def link_to_user_unless_nil( user )
-    user == nil ? red_label(:unassigned) : link_to_user(user)
+    if user == nil
+      return red_label(:unassigned)
+    elsif user.kind_of? User
+      return link_to_user(user)
+    else
+      return h( user.name )
+    end
   end
 
   def link_to_version_unless_nil( version )

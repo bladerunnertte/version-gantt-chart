@@ -8,9 +8,23 @@ class VersionGanttChartController < ApplicationController
   def index
     events = []
 
+    #プロジェクト一覧作成
     projects = Project.find :all, :conditions => Project.visible_by(User.current)
+
+    #全ユーザをユーザリストに追加
     user_list = User.find(:all)
+
+    #ダミーユーザをユーザリストに追加
     user_list.push NobodyUser.new
+
+    #ユーザグループをユーザリストに追加
+    user_groups = Group.find(:all)
+    user_groups.each do |group|
+      user_group_wrapper = UserGroupWrapper.new(group)
+      user_list.push user_group_wrapper
+    end
+
+    #ユーザとプロジェクトの全組合せでユーザタスクを作成
     user_list.each do |user|
       projects.each do |project|
         if project.active?
