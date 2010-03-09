@@ -1,6 +1,35 @@
 <% content_for :header_tags do -%>
   <%= stylesheet_link_tag 'version_gantt_chart', :plugin => 'redmine_version_gantt_chart' %>
 <% end -%>
+
+<% form_tag(params.merge(:month => nil, :year => nil, :months => nil), :id => 'chart_control_form') do %>
+
+<p style="float:right;">
+<%= if @gantt.zoom < 4
+    link_to_remote image_tag('zoom_in.png'), {:url => @gantt.params.merge(:zoom => (@gantt.zoom+1)), :update => 'wrapper'}, {:href => url_for(@gantt.params.merge(:zoom => (@gantt.zoom+1)))}
+  else
+    image_tag 'zoom_in_g.png'
+  end %>
+<%= if @gantt.zoom > 1
+    link_to_remote image_tag('zoom_out.png'), {:url => @gantt.params.merge(:zoom => (@gantt.zoom-1)), :update => 'wrapper'}, {:href => url_for(@gantt.params.merge(:zoom => (@gantt.zoom-1)))}
+  else
+    image_tag 'zoom_out_g.png'
+  end %>
+</p>
+
+<p class="buttons">
+<%= text_field_tag 'months', @gantt.months, :size => 2 %>
+<%= l(:label_months_from) %>
+<%= select_month(@gantt.month_from, :prefix => "month", :discard_type => true) %>
+<%= select_year(@gantt.year_from, :prefix => "year", :discard_type => true) %>
+<%= hidden_field_tag 'zoom', @gantt.zoom %>
+
+<%= link_to_remote l(:button_apply), 
+                   { :update => 'wrapper', :with => "Form.serialize('chart_control_form')"
+                   }, :class => 'icon icon-checked' %>
+</p>
+<% end %>
+
 <% zoom = 2
 @gantt.zoom.times { zoom = zoom * 2 }
 
@@ -175,6 +204,5 @@ if Date.today >= @gantt.date_from and Date.today <= @gantt.date_to %>
 </td>
 </tr>
 </table>
-
 
 <% html_title(l(:label_title)) -%>

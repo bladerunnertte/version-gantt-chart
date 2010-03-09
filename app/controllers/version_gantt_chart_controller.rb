@@ -6,7 +6,7 @@ class VersionGanttChartController < ApplicationController
   unloadable
 
   def index
-    events = []
+    @gantt = UserTaskGantt.new(params)
 
     #プロジェクト一覧作成
     projects = Project.find :all, :conditions => Project.visible_by(User.current)
@@ -25,6 +25,7 @@ class VersionGanttChartController < ApplicationController
     end
 
     #ユーザとプロジェクトの全組合せでユーザタスクを作成
+    events = []
     user_list.each do |user|
       projects.each do |project|
         if project.active?
@@ -36,9 +37,6 @@ class VersionGanttChartController < ApplicationController
       end
     end
 
-    from_date = Date.today - 15
-    months = from_date.month == Date.today.month ? 3 : 4 
-    @gantt = UserTaskGantt.new(:months=>4, :year=>from_date.year, :month=>from_date.month, :months=>months)
     @gantt.events = events.sort
   end
 
