@@ -1,3 +1,5 @@
+<h2><%= l(:label_menu) %></h2>
+
 <% content_for :header_tags do -%>
   <%= stylesheet_link_tag 'version_gantt_chart', :plugin => 'redmine_version_gantt_chart' %>
 <% end -%>
@@ -204,5 +206,9 @@ if Date.today >= @gantt.date_from and Date.today <= @gantt.date_to %>
 </td>
 </tr>
 </table>
+
+<% content_for :sidebar do %>
+    <%= render :partial => 'sidebar' %>
+<% end %>
 
 <% html_title(l(:label_title)) -%>
