@@ -1,4 +1,9 @@
 class UserTaskGantt < Redmine::Helpers::Gantt
+  def initialize params
+    super
+    @visible = params[:visible]
+  end
+
   def events=(e)
     #eventsの開始日でのソートをオーバライドしてキャンセル
 
@@ -9,6 +14,10 @@ class UserTaskGantt < Redmine::Helpers::Gantt
     e.delete_if{|i| too_far_future?(i) }
     
     @events = e
+  end
+
+  def visible?(user)
+    return @visible != nil && @visible.include?(user.id.to_s)
   end
 
 private

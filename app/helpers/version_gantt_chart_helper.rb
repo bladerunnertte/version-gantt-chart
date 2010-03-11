@@ -47,6 +47,14 @@ module VersionGanttChartHelper
     end
   end
 
+  def display_name( user )
+    if user == nil #未設定時
+      return red_label(:unassigned)
+    else
+      return h( user.name )
+    end
+  end
+
   def link_to_version_unless_nil( version )
     version == nil ? red_label(:unassigned) : link_to_version(version)
   end
