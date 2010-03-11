@@ -19,4 +19,8 @@ class UserGroupWrapper
     end
     return false #一人も一致するユーザがいない
   end
+
+  def id
+    return @user_group.id #ユーザとグループのIDは被らない（共通の通し番号が振られる）
+  end
 end

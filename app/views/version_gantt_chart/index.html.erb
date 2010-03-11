@@ -6,14 +6,23 @@
 
 <% form_tag(params.merge(:month => nil, :year => nil, :months => nil), :id => 'chart_control_form') do %>
 
+<fieldset class="collapsible">
+  <legend onclick="toggleFieldset(this);"><%= l(:label_target_user) %></legend>
+  <div>
+  <% @user_list.each do |user| %>
+     <%= check_box_tag "visible[]",user.id,@gantt.visible?(user) %><%= display_name(user) %>
+  <% end %>
+  </div>
+</fieldset>
+
 <p style="float:right;">
 <%= if @gantt.zoom < 4
-    link_to_remote image_tag('zoom_in.png'), {:url => @gantt.params.merge(:zoom => (@gantt.zoom+1)), :update => 'wrapper'}, {:href => url_for(@gantt.params.merge(:zoom => (@gantt.zoom+1)))}
+    link_to_remote image_tag('zoom_in.png'), {:url => @gantt.params.merge(:zoom => (@gantt.zoom+1)), :update => 'wrapper', :with => "Form.serialize('chart_control_form')"}, {:href => url_for(@gantt.params.merge(:zoom => (@gantt.zoom+1)))}
   else
     image_tag 'zoom_in_g.png'
   end %>
 <%= if @gantt.zoom > 1
-    link_to_remote image_tag('zoom_out.png'), {:url => @gantt.params.merge(:zoom => (@gantt.zoom-1)), :update => 'wrapper'}, {:href => url_for(@gantt.params.merge(:zoom => (@gantt.zoom-1)))}
+    link_to_remote image_tag('zoom_out.png'), {:url => @gantt.params.merge(:zoom => (@gantt.zoom-1)), :update => 'wrapper', :with => "Form.serialize('chart_control_form')"}, {:href => url_for(@gantt.params.merge(:zoom => (@gantt.zoom-1)))}
   else
     image_tag 'zoom_out_g.png'
   end %>
