@@ -6,14 +6,19 @@ class VersionGanttChartController < ApplicationController
   unloadable
 
   def index
-    #アクティブなユーザ一覧を取得
-    @user_list = User.find(:all, :conditions => ["status = ?",User::STATUS_ACTIVE])
 
     #ダミーユーザをユーザリストに追加
+    @user_list = []
     @user_list.push NobodyUser.new
+
+    #アクティブなユーザ一覧を取得
+    active_users = User.find(:all, :conditions => ["status = ?",User::STATUS_ACTIVE])
+    active_users.sort!{|a,b| a.name <=> b.name}
+    @user_list.concat(active_users)
 
     #ユーザグループをユーザリストに追加
     user_groups = Group.find(:all)
+    user_groups.sort!{|a,b| a.lastname <=> b.lastname}
     user_groups.each do |group|
       user_group_wrapper = UserGroupWrapper.new(group)
       @user_list.push user_group_wrapper
