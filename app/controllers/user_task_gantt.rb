@@ -1,7 +1,15 @@
 class UserTaskGantt < Redmine::Helpers::Gantt
-  def initialize params
-    super
+  def initialize params    
+    if params[:year] && params[:year].to_i >0
+      super params
+    else
+      from_date = Date.today - 15
+      months = (from_date.month == Date.today.month ? 3 : 4 )
+      super(:months=>months, :year=>from_date.year,:month=>from_date.month)
+    end
+
     @visible = params[:visible]
+
   end
 
   def events=(e)
