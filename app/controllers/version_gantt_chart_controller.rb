@@ -7,7 +7,7 @@ class VersionGanttChartController < ApplicationController
 
   def index
     #アクティブなユーザ一覧を取得
-    @user_list = User.find(:all, :conditions => "status = #{User::STATUS_ACTIVE}")
+    @user_list = User.find(:all, :conditions => ["status = ?",User::STATUS_ACTIVE])
 
     #ダミーユーザをユーザリストに追加
     @user_list.push NobodyUser.new
