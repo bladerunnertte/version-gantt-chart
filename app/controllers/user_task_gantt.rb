@@ -1,5 +1,8 @@
 class UserTaskGantt < Redmine::Helpers::Gantt
-  def initialize params    
+
+  DEFAULT_SHOWING_USER_COUNT = 10
+
+  def initialize params
     if params[:year] && params[:year].to_i >0
       super params
     else
@@ -9,6 +12,14 @@ class UserTaskGantt < Redmine::Helpers::Gantt
     end
 
     @visible = params[:visible]
+    if @visible == nil
+      @visible = []
+      users = params[:users]
+      users.each do |user|
+        @visible.push user.id.to_s
+        break if @visible.length >= DEFAULT_SHOWING_USER_COUNT
+      end 
+    end
 
   end
 
