@@ -24,11 +24,11 @@ class VersionGanttChartController < ApplicationController
       @user_list.push user_group_wrapper
     end
 
+    #ガントチャートインスタンス作成
+    @gantt = UserTaskGantt.new(params.merge({:users=>@user_list}))
+
     #プロジェクト一覧作成
     projects = Project.find :all, :conditions => Project.visible_by(User.current)
-
-    #ガントチャートインスタンス作成
-    @gantt = UserTaskGantt.new(params)
 
     #ユーザとプロジェクトの全組合せでユーザタスクを作成
     events = []
