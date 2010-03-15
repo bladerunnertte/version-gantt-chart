@@ -7,7 +7,7 @@
 <% form_tag(params.merge(:month => nil, :year => nil, :months => nil), :id => 'chart_control_form') do %>
 
 <fieldset class="collapsible">
-  <legend onclick="toggleFieldset(this);"><%= l(:label_target_user) %></legend>
+  <legend onclick="toggleFieldset(this);"><%= l(:label_users_groups) %></legend>
   <div>
   <% @user_list.each do |user| %>
      <%= check_box_tag "visible[]",user.id,@gantt.visible?(user) %><%= display_name(user) %>
