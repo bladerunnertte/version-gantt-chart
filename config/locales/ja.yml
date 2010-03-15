@@ -7,3 +7,4 @@ ja:
  label_view_all_user: "全ユーザを表示"
  label_view_all_group: "全グループを表示"
  label_view_me: "自分を表示"
+ label_group_members: "グループメンバー"

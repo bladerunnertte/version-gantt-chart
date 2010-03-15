@@ -13,7 +13,8 @@ class VersionGanttChartController < ApplicationController
     @user_list.concat(active_users)
 
     #ユーザグループをユーザリストに追加
-    @user_list.concat(user_groups)
+    @group_list = user_groups
+    @user_list.concat(@group_list)
 
     #ガントチャートインスタンス作成
     @gantt = UserTaskGantt.new(params.merge({:users=>@user_list}))
@@ -64,6 +65,15 @@ class VersionGanttChartController < ApplicationController
   def current
     visible_users = unassigned_users
     visible_users.push User.current
+    redirect_to_index(visible_users)
+  end
+
+  def group
+    visible_users = unassigned_users
+
+    selected_group = Group.find(params[:id])
+    visible_users.concat( selected_group.users )
+
     redirect_to_index(visible_users)
   end
 
