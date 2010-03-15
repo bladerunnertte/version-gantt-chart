@@ -39,6 +39,34 @@ class VersionGanttChartController < ApplicationController
     @gantt.events = events.sort
   end
 
+  def all
+    visible_users = unassigned_users
+    visible_users.concat active_users
+    visible_users.concat user_groups
+    redirect_to_index(visible_users)
+  end
+
+
+  def all_user
+    visible_users = unassigned_users
+    visible_users.concat active_users
+    redirect_to_index(visible_users)
+  end
+
+
+  def all_group
+    visible_users = unassigned_users
+    visible_users.concat user_groups
+    redirect_to_index(visible_users)
+  end
+
+
+  def current
+    visible_users = unassigned_users
+    visible_users.push User.current
+    redirect_to_index(visible_users)
+  end
+
 private
   def add_usertasks( user, version, events )
     user_tasks = UserTasks.new( user, version )
@@ -68,5 +96,15 @@ private
     end
 
     wrapped_user_groups
+  end
+
+  def redirect_to_index visible_users
+    visible_user_ids = []
+
+    visible_users.each do |user|
+      visible_user_ids.push user.id.to_s 
+    end
+
+    redirect_to :action => 'index', :visible => visible_user_ids
   end
 end
