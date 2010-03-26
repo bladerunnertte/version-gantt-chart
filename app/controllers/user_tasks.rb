@@ -103,7 +103,7 @@ class UserTasks
   def filter_values
     values = {}
     values["status_id"] = [""]
-    values["assigned_to_id"] = (@principal == nil) ? [""] : [@principal.id] 
+    values["assigned_to_id"] = assigned_id_list
     values["fixed_version_id"] = (@version == nil) ? [""] : [@version.id]
     return values
   end
@@ -116,4 +116,19 @@ private
       return @principal == issue.assigned_to
     end
   end
+
+  def assigned_id_list
+    if @principal == nil
+      return [""]
+    elsif @principal.is_a?(Group)
+      id_list = []
+      @principal.users.each do |user|
+        id_list.push user.id
+      end
+      return id_list
+    else
+      return [@principal.id]
+    end
+  end
+    
 end
