@@ -5,5 +5,5 @@
 <%= link_to l(:label_view_me), {:action => 'current'} %><br/>
 <h3><%= l(:label_group_members) %></h3>
 <% @group_list.each do |group| %>
-  <%= link_to h(group.name), {:action => 'group', :id => group.id} %><br/>
+  <%= link_to h(group.to_s), {:action => 'group', :id => group.id} %><br/>
 <% end %>
