@@ -7,24 +7,20 @@ class VersionGanttChartController < ApplicationController
 
   def index
     #ダミーユーザをユーザリストに追加
-    @user_list = unassigned_users
+    @principal_list = unassigned_users
 
-    #アクティブなユーザ一覧を取得
-    @user_list.concat(active_users)
-
-    #ユーザグループをユーザリストに追加
-    @group_list = user_groups
-    @user_list.concat(@group_list)
+    #アクティブでアクセス権限のあるユーザとグループの一覧を取得
+    member_principals = principals_in_visible_project
+    @principal_list.concat( member_principals )
+    @group_list = extract_groups( member_principals )
 
     #ガントチャートインスタンス作成
-    @gantt = UserTaskGantt.new(params.merge({:users=>@user_list}))
-
-    #プロジェクト一覧作成
-    projects = Project.find :all, :conditions => Project.visible_by(User.current)
+    @gantt = UserTaskGantt.new(params.merge({:users=>@principal_list}))
 
     #ユーザとプロジェクトの全組合せでユーザタスクを作成
     events = []
-    @user_list.each do |user|
+    projects = Project.find :all, :conditions => Project.visible_by(User.current)
+    @principal_list.each do |user|
       if @gantt.visible?(user)
         projects.each do |project|
           if project.active?
@@ -41,40 +37,39 @@ class VersionGanttChartController < ApplicationController
   end
 
   def all
-    visible_users = unassigned_users
-    visible_users.concat active_users
-    visible_users.concat user_groups
-    redirect_to_index(visible_users)
+    visible_principals = unassigned_users
+    visible_principals.concat(principals_in_visible_project)
+    redirect_to_index(visible_principals)
   end
 
 
   def all_user
-    visible_users = unassigned_users
-    visible_users.concat active_users
-    redirect_to_index(visible_users)
+    visible_principals = unassigned_users
+    visible_principals.concat(extract_users(principals_in_visible_project))
+    redirect_to_index(visible_principals)
   end
 
 
   def all_group
-    visible_users = unassigned_users
-    visible_users.concat user_groups
-    redirect_to_index(visible_users)
+    visible_principals = unassigned_users
+    visible_principals.concat(extract_groups(principals_in_visible_project))
+    redirect_to_index(visible_principals)
   end
 
 
   def current
-    visible_users = unassigned_users
-    visible_users.push User.current
-    redirect_to_index(visible_users)
+    visible_principals = unassigned_users
+    visible_principals.push User.current
+    redirect_to_index(visible_principals)
   end
 
   def group
-    visible_users = unassigned_users
+    visible_principals = unassigned_users
 
     selected_group = Group.find(params[:id])
-    visible_users.concat( selected_group.users )
+    visible_principals.concat( selected_group.users )
 
-    redirect_to_index(visible_users)
+    redirect_to_index(visible_principals)
   end
 
 private
@@ -91,14 +86,31 @@ private
     user_list.push NobodyUser.new
   end
 
-  def active_users
-    active_users = User.find(:all, :conditions => ["status = ?",User::STATUS_ACTIVE])
-    active_users.sort{|a,b| a.name <=> b.name}
+  def principals_in_visible_project
+    user_list = []
+
+    projects = Project.find :all, :conditions => Project.visible_by(User.current)
+    projects.each do |project|
+      user_list.concat(project.principals)
+    end
+    user_list.uniq!
+    user_list.sort
   end
 
-  def user_groups
-    user_groups = Group.find(:all)
-    user_groups.sort!{|a,b| a.lastname <=> b.lastname}
+  def extract_users(principals)
+    user_list = []
+    principals.each do |principal|
+      user_list.push principal if principal.is_a?(User)
+    end
+    user_list
+  end
+
+  def extract_groups(principals)
+    group_list = []
+    principals.each do |principal|
+      group_list.push principal if principal.is_a?(Group)
+    end
+    group_list
   end
 
   def redirect_to_index visible_users

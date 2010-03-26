@@ -9,8 +9,8 @@
 <fieldset class="collapsible">
   <legend onclick="toggleFieldset(this);"><%= l(:label_users_groups) %></legend>
   <div>
-  <% @user_list.each do |user| %>
-     <%= check_box_tag "visible[]",user.id,@gantt.visible?(user) %><%= display_name(user) %>
+  <% @principal_list.each do |principal| %>
+     <%= check_box_tag "visible[]",principal.id,@gantt.visible?(principal) %><%= display_name(principal) %>
   <% end %>
   </div>
 </fieldset>
