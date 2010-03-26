@@ -1,8 +1,8 @@
 class UserTasks
-  attr_reader :user, :version
+  attr_reader :principal, :version
 
-  def initialize( user, version )
-    @user = user
+  def initialize( principal, version )
+    @principal = principal
     @version = version
     @task_info_collector = TaskInfoCollector.new
     @empty = true
@@ -24,7 +24,7 @@ class UserTasks
     end
 
     #ユーザとバージョンが一致するチケットを集計対象として登録する
-    if( @user == issue.assigned_to && @version == issue.fixed_version )
+    if( assigned?(issue) && @version == issue.fixed_version )
       @empty = false
       @task_info_collector.add(issue)
     end
@@ -63,15 +63,15 @@ class UserTasks
   #比較メソッド（ソート用）
   def <=>(other)
     #未設定を前にまとめる
-    return -1 if @user == nil && !(other.user == nil)
-    return 1 if !(@user == nil) && other.user == nil
+    return -1 if @principal == nil && !(other.principal == nil)
+    return 1 if !(@principal == nil) && other.principal == nil
 
     #ユーザグループを後ろにまとめる
-    return -1 if @user.kind_of?(User) && !other.user.kind_of?(User)
-    return 1 if !@user.kind_of?(User) && other.user.kind_of?(User)
+    return -1 if @principal.kind_of?(User) && !other.principal.kind_of?(User)
+    return 1 if !@principal.kind_of?(User) && other.principal.kind_of?(User)
 
     #同じクラスは名簿順でソート
-    compared_result = @user.name <=> other.user.name
+    compared_result = @principal.to_s <=> other.principal.to_s
     if compared_result == 0
       compared_result = due_date <=> other.due_date
     end
@@ -96,15 +96,24 @@ class UserTasks
   def filter_operators
     operators = {}
     operators["status_id"] = "*"
-    operators["assigned_to_id"] = @user == nil ? "!*" : "="
+    operators["assigned_to_id"] = @principal == nil ? "!*" : "="
     operators["fixed_version_id"] = @version == nil ? "!*" : "="
     return operators
   end
   def filter_values
     values = {}
     values["status_id"] = [""]
-    values["assigned_to_id"] = (@user == nil) ? [""] : [@user.id] 
+    values["assigned_to_id"] = (@principal == nil) ? [""] : [@principal.id] 
     values["fixed_version_id"] = (@version == nil) ? [""] : [@version.id]
     return values
+  end
+
+private
+  def assigned? issue
+    if @principal.is_a?(Group)
+      return !issue.assigned_to.nil? && @principal.users.include?(issue.assigned_to)
+    else
+      return @principal == issue.assigned_to
+    end
   end
 end

@@ -99,13 +99,6 @@ private
   def user_groups
     user_groups = Group.find(:all)
     user_groups.sort!{|a,b| a.lastname <=> b.lastname}
-
-    wrapped_user_groups = []
-    user_groups.each do |group|
-      wrapped_user_groups.push UserGroupWrapper.new(group)
-    end
-
-    wrapped_user_groups
   end
 
   def redirect_to_index visible_users

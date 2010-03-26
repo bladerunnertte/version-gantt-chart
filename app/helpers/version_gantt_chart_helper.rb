@@ -43,7 +43,7 @@ module VersionGanttChartHelper
     elsif user.kind_of? User
       return link_to_user(user)
     else
-      return h( user.name )
+      return h( user.to_s )
     end
   end
 
@@ -51,7 +51,7 @@ module VersionGanttChartHelper
     if user == nil #未設定時
       return red_label(:unassigned)
     else
-      return h( user.name )
+      return h( user.to_s )
     end
   end
 
