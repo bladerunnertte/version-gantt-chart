@@ -2,6 +2,8 @@ class UserTaskGantt < Redmine::Helpers::Gantt
 
   DEFAULT_SHOWING_USER_COUNT = 10
 
+  attr_reader :events
+
   def initialize params
     if params[:year] && params[:year].to_i >0
       super params
@@ -10,6 +12,8 @@ class UserTaskGantt < Redmine::Helpers::Gantt
       months = (from_date.month == Date.today.month ? 3 : 4 )
       super(:months=>months, :year=>from_date.year,:month=>from_date.month)
     end
+
+    @events = [] unless @events;
 
     @visible = params[:visible]
     if @visible == nil
