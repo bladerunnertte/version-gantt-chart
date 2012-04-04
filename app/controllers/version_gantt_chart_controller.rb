@@ -19,7 +19,7 @@ class VersionGanttChartController < ApplicationController
 
     #ユーザとプロジェクトの全組合せでユーザタスクを作成
     events = []
-    projects = Project.find :all, :conditions => Project.visible_by(User.current)
+    projects = Project.find :all, :conditions => Project.visible_condition(User.current)
     @principal_list.each do |user|
       if @gantt.visible?(user)
         projects.each do |project|
@@ -89,7 +89,7 @@ private
   def principals_in_visible_project
     user_list = []
 
-    projects = Project.find :all, :conditions => Project.visible_by(User.current)
+    projects = Project.find :all, :conditions => Project.visible_condition(User.current)
     projects.each do |project|
       user_list.concat(project.principals)
     end
